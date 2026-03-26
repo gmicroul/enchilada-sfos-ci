@@ -83,9 +83,9 @@ def press_enter():
 
 def click_single_player(window):
     """点击单一玩家"""
-    # 窗口中心: (412, 1248)
-    center_x = 412
-    center_y = 1248
+    # 窗口中心: (412, 1248) - 相对于窗口的坐标
+    center_x = window['x'] + 412
+    center_y = window['y'] + 1248
 
     print("点击 单一玩家...")
     click_at(center_x, center_y)
@@ -94,9 +94,9 @@ def click_single_player(window):
 
 def click_character_ok(window):
     """点击角色 OK"""
-    # 根据测试结果：绝对位置 (712, 1498)
-    click_x = 712
-    click_y = 1498
+    # 根据测试结果：绝对位置 (712, 1498) - 改为相对于窗口
+    click_x = window['x'] + 712
+    click_y = window['y'] + 1498
 
     print("点击 角色 OK...")
     click_at(click_x, click_y)
@@ -105,9 +105,9 @@ def click_character_ok(window):
 
 def click_normal_difficulty(window):
     """点击普通难度"""
-    # 根据测试结果：窗口中心往上5像素，即 (412, 1243)
-    center_x = 412
-    center_y = 1243
+    # 根据测试结果：窗口中心往上5像素，即 (412, 1243) - 改为相对于窗口
+    center_x = window['x'] + 412
+    center_y = window['y'] + 1243
 
     print("选择 普通难度...")
     click_at(center_x, center_y)
@@ -158,9 +158,9 @@ def enter_game():
     print("\n4. 进入游戏...")
     time.sleep(20)  # 基础等待
 
-    # 点击单一玩家上方30像素位置，跳过视频
-    skip_x = 412
-    skip_y = 1248 - 30  # 1218
+    # 点击单一玩家上方30像素位置，跳过视频 - 改为相对于窗口的坐标
+    skip_x = window['x'] + 412
+    skip_y = window['y'] + 1248 - 30  # 1218
     print(f"点击视频跳过位置: ({skip_x}, {skip_y}) x3")
     for i in range(3):
         click_at(skip_x, skip_y)
