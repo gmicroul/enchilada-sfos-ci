@@ -83,9 +83,11 @@ def press_enter():
 
 def click_single_player(window):
     """点击单一玩家"""
-    # 窗口中心: (412, 1248) - 相对于窗口的坐标
-    center_x = window['x'] + 412
-    center_y = window['y'] + 1248
+    # 窗口中心: (412, 1248) - 这是绝对坐标
+    # 相对坐标应该是 (412-12, 1248-948) = (400, 300)
+    # 但为了兼容不同的窗口位置，我们使用原始的绝对坐标
+    center_x = 412
+    center_y = 1248
 
     print("点击 单一玩家...")
     click_at(center_x, center_y)
@@ -94,9 +96,9 @@ def click_single_player(window):
 
 def click_character_ok(window):
     """点击角色 OK"""
-    # 根据测试结果：绝对位置 (712, 1498) - 改为相对于窗口
-    click_x = window['x'] + 712
-    click_y = window['y'] + 1498
+    # 根据测试结果：绝对位置 (712, 1498)
+    click_x = 712
+    click_y = 1498
 
     print("点击 角色 OK...")
     click_at(click_x, click_y)
@@ -105,9 +107,9 @@ def click_character_ok(window):
 
 def click_normal_difficulty(window):
     """点击普通难度"""
-    # 根据测试结果：窗口中心往上5像素，即 (412, 1243) - 改为相对于窗口
-    center_x = window['x'] + 412
-    center_y = window['y'] + 1243
+    # 根据测试结果：窗口中心往上5像素，即 (412, 1243)
+    center_x = 412
+    center_y = 1243
 
     print("选择 普通难度...")
     click_at(center_x, center_y)
@@ -154,13 +156,30 @@ def enter_game():
         print("   ✗ 未找到窗口，请检查游戏是否正常启动")
         return False
 
+    # 3.5 移动窗口到固定位置
+    print("\n3.5 移动窗口到固定位置...")
+    target_x = 12
+    target_y = 948
+    result = subprocess.run(
+        ["xdotool", "windowmove", window['id'], str(target_x), str(target_y)],
+        capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        print(f"   ✓ 窗口已移动到: ({target_x}, {target_y})")
+        # 更新窗口位置信息
+        window['x'] = target_x
+        window['y'] = target_y
+    else:
+        print(f"   ⚠ 窗口移动失败: {result.stderr}")
+    time.sleep(1)  # 等待窗口移动完成
+
     # 4. 进入游戏流程
     print("\n4. 进入游戏...")
     time.sleep(20)  # 基础等待
 
-    # 点击单一玩家上方30像素位置，跳过视频 - 改为相对于窗口的坐标
-    skip_x = window['x'] + 412
-    skip_y = window['y'] + 1248 - 30  # 1218
+    # 点击单一玩家上方30像素位置，跳过视频
+    skip_x = 412
+    skip_y = 1248 - 30  # 1218
     print(f"点击视频跳过位置: ({skip_x}, {skip_y}) x3")
     for i in range(3):
         click_at(skip_x, skip_y)
