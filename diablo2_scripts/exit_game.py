@@ -11,20 +11,13 @@ import os
 # 设置 DISPLAY
 os.environ['DISPLAY'] = ':0'
 
-from Xlib import X, display
-from Xlib.ext import xtest
+import subprocess
 import time
 
 def press_key(key_name):
     """按键盘按键"""
     try:
-        d = display.Display()
-        keycode = d.keysym_to_keycode(key_name)
-        xtest.fake_input(d, X.KeyPress, keycode)
-        d.flush()
-        time.sleep(0.05)
-        xtest.fake_input(d, X.KeyRelease, keycode)
-        d.flush()
+        subprocess.run(["xdotool", "key", key_name], check=True)
     except Exception as e:
         print(f"   ⚠ 按键错误: {e}")
 
@@ -32,15 +25,9 @@ def press_key(key_name):
 def click_at(x, y):
     """鼠标点击"""
     try:
-        d = display.Display()
-        xtest.fake_input(d, X.MotionNotify, x=x, y=y)
-        d.flush()
+        subprocess.run(["xdotool", "mousemove", str(x), str(y)], check=True)
         time.sleep(0.1)
-        xtest.fake_input(d, X.ButtonPress, 1)
-        d.flush()
-        time.sleep(0.05)
-        xtest.fake_input(d, X.ButtonRelease, 1)
-        d.flush()
+        subprocess.run(["xdotool", "click", "1"], check=True)
     except Exception as e:
         print(f"   ⚠ 点击错误: {e}")
 
