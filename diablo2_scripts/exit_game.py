@@ -94,7 +94,8 @@ def exit_game():
 
     # 5. 点击退出按钮
     print("5. 点击退出按钮...")
-    # 退出按钮在游戏窗口的右下角，大约在(400, 560)相对于游戏窗口
+    # 使用统一逻辑：游戏窗口右下角区域
+    # 计算：(x + 400, y + 560)
     exit_x = window['x'] + 400
     exit_y = window['y'] + 560
     click_at(exit_x, exit_y)
@@ -112,7 +113,7 @@ def main():
     print("  1. 获取游戏窗口位置")
     print("  2. 按 ESC 打开菜单")
     print("  3. 按 Up 定位到'存储并离开游戏'")
-    print("  4. 按 Enter 确认")
+    print("   4. 按 Enter 确认")
     print("  5. 点击退出按钮")
     print("=" * 50)
 
