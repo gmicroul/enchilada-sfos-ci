@@ -83,10 +83,9 @@ def press_enter():
 
 def click_single_player(window):
     """点击单一玩家"""
-    # 窗口中心: (412, 1248) - 这是相对于窗口的坐标
-    # 需要加上窗口的绝对位置
-    center_x = window['x'] + 412
-    center_y = window['y'] + 1248
+    # 使用相对坐标：窗口中心
+    center_x = window['x'] + window['width'] // 2
+    center_y = window['y'] + window['height'] // 2
 
     print(f"点击 单一玩家... (绝对坐标: {center_x}, {center_y})")
     click_at(center_x, center_y)
@@ -95,9 +94,9 @@ def click_single_player(window):
 
 def click_character_ok(window):
     """点击角色 OK"""
-    # 根据测试结果：绝对位置 (712, 1498) - 改为相对于窗口
-    click_x = window['x'] + 712
-    click_y = window['y'] + 1498
+    # 使用相对坐标：窗口右下角区域
+    click_x = window['x'] + window['width'] - 100
+    click_y = window['y'] + window['height'] - 100
 
     print(f"点击 角色 OK... (绝对坐标: {click_x}, {click_y})")
     click_at(click_x, click_y)
@@ -106,9 +105,9 @@ def click_character_ok(window):
 
 def click_normal_difficulty(window):
     """点击普通难度"""
-    # 根据测试结果：窗口中心往上5像素，即 (412, 1243) - 改为相对于窗口
-    center_x = window['x'] + 412
-    center_y = window['y'] + 1243
+    # 使用相对坐标：窗口中心偏上
+    center_x = window['x'] + window['width'] // 2
+    center_y = window['y'] + window['height'] // 2 - 50
 
     print(f"选择 普通难度... (绝对坐标: {center_x}, {center_y})")
     click_at(center_x, center_y)
@@ -164,9 +163,9 @@ def enter_game():
     print("\n4. 进入游戏...")
     time.sleep(20)  # 基础等待
 
-    # 点击单一玩家上方30像素位置，跳过视频 - 使用相对于窗口的坐标
-    skip_x = window['x'] + 412
-    skip_y = window['y'] + 1248 - 30  # 1218
+    # 点击窗口中心跳过视频 - 使用相对坐标
+    skip_x = window['x'] + window['width'] // 2
+    skip_y = window['y'] + window['height'] // 2
     print(f"点击视频跳过位置: ({skip_x}, {skip_y}) x3")
     for i in range(3):
         click_at(skip_x, skip_y)
