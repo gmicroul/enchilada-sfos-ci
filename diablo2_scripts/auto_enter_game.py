@@ -83,9 +83,10 @@ def press_enter():
 
 def click_single_player(window):
     """点击单一玩家"""
-    # 使用相对坐标：窗口中心
-    center_x = window['x'] + window['width'] // 2
-    center_y = window['y'] + window['height'] // 2
+    # 使用相对坐标：窗口中心偏上
+    # 根据测试结果：单一玩家按钮在游戏窗口内的位置大约是(380, 280)
+    center_x = window['x'] + 380
+    center_y = window['y'] + 280
 
     print(f"点击 单一玩家... (绝对坐标: {center_x}, {center_y})")
     click_at(center_x, center_y)
@@ -94,9 +95,10 @@ def click_single_player(window):
 
 def click_character_ok(window):
     """点击角色 OK"""
-    # 使用相对坐标：窗口右下角区域
-    click_x = window['x'] + window['width'] - 100
-    click_y = window['y'] + window['height'] - 100
+    # 使用相对坐标：窗口右下角
+    # 根据测试结果：角色OK按钮在游戏窗口内的位置大约是(700, 550)
+    click_x = window['x'] + 700
+    click_y = window['y'] + 550
 
     print(f"点击 角色 OK... (绝对坐标: {click_x}, {click_y})")
     click_at(click_x, click_y)
@@ -106,8 +108,9 @@ def click_character_ok(window):
 def click_normal_difficulty(window):
     """点击普通难度"""
     # 使用相对坐标：窗口中心偏上
-    center_x = window['x'] + window['width'] // 2
-    center_y = window['y'] + window['height'] // 2 - 50
+    # 根据测试结果：普通难度按钮在游戏窗口内的位置大约是(350, 270)
+    center_x = window['x'] + 350
+    center_y = window['y'] + 270
 
     print(f"选择 普通难度... (绝对坐标: {center_x}, {center_y})")
     click_at(center_x, center_y)
