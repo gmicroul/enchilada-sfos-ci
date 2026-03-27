@@ -155,27 +155,9 @@ def enter_game():
         print("   ✗ 未找到窗口，请检查游戏是否正常启动")
         return False
 
-    # 3.5 移动窗口到固定位置（可选）
-    print("\n3.5 尝试移动窗口到固定位置...")
-    target_x = 12
-    target_y = 948
-    result = subprocess.run(
-        ["xdotool", "windowmove", window['id'], str(target_x), str(target_y)],
-        capture_output=True, text=True
-    )
-    if result.returncode == 0:
-        print(f"   ✓ 窗口移动命令已执行")
-        # 重新获取窗口位置
-        time.sleep(1)
-        new_window = find_window()
-        if new_window:
-            print(f"   ✓ 窗口实际位置: ({new_window['x']}, {new_window['y']})")
-            # 使用实际位置
-            window['x'] = new_window['x']
-            window['y'] = new_window['y']
-    else:
-        print(f"   ⚠ 窗口移动失败: {result.stderr}")
-        print(f"   ⚠ 使用窗口当前位置: ({window['x']}, {window['y']})")
+    # 3.5 不移动窗口，使用实际位置
+    print("\n3.5 使用窗口实际位置...")
+    print(f"   ✓ 窗口位置: ({window['x']}, {window['y']})")
     time.sleep(1)  # 等待窗口稳定
 
     # 4. 进入游戏流程
