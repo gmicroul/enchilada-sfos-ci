@@ -146,6 +146,9 @@ sed -i '/f_ccid/d' drivers/usb/gadget/function/Makefile || true
 sed -i '/f_gsi/d' drivers/usb/gadget/function/Makefile || true
 sed -i '/f_qdss/d' drivers/usb/gadget/function/Makefile || true
 
+echo "  - 清理 drivers/usb/gadget/Makefile"
+sed -i '/configfs/d' drivers/usb/gadget/Makefile || true
+
 echo ""
 echo "3. 清理 Kconfig 引用..."
 
