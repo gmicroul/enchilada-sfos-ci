@@ -78,6 +78,7 @@ sed -i '/esoc/d' drivers/Makefile || true
 sed -i '/sensors/d' drivers/Makefile || true
 
 echo "  - 清理 drivers/soc/qcom/Makefile"
+sed -i '/tracer_pkt/d' drivers/soc/qcom/Makefile || true
 sed -i '/glink/d' drivers/soc/qcom/Makefile || true
 sed -i '/spcom/d' drivers/soc/qcom/Makefile || true
 sed -i '/subsystem_restart/d' drivers/soc/qcom/Makefile || true
