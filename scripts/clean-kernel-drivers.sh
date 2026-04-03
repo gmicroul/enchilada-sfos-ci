@@ -98,6 +98,7 @@ sed -i '/bluetooth-power/d' drivers/bluetooth/Makefile || true
 
 echo "  - 清理 drivers/clk/qcom/mdss/Makefile"
 sed -i '/mdss-dsi-pll-10nm/d' drivers/clk/qcom/mdss/Makefile || true
+sed -i '/mdss-pll/d' drivers/clk/qcom/mdss/Makefile || true
 
 echo "  - 清理 drivers/crypto/msm/Makefile"
 sed -i '/qce50/d' drivers/crypto/msm/Makefile || true
