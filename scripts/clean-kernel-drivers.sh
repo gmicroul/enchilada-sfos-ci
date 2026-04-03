@@ -147,6 +147,7 @@ echo "3. 清理 Kconfig 引用..."
 
 # 从 Kconfig 中移除对已删除目录的引用
 echo "  - 清理 drivers/Kconfig"
+sed -i '/source "drivers\/esoc\/Kconfig"/d' drivers/Kconfig || true
 sed -i '/source "drivers\/sensors\/Kconfig"/d' drivers/Kconfig || true
 
 echo "  - 清理 drivers/video/Kconfig"
