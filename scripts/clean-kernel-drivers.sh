@@ -73,6 +73,7 @@ echo "2. 清理 Makefile 引用..."
 # 从 Makefile 中移除对已删除目录的引用
 echo "  - 清理 drivers/Makefile"
 sed -i '/vidc/d' drivers/media/platform/msm/Makefile || true
+sed -i '/camera/d' drivers/media/platform/msm/Makefile || true
 sed -i '/esoc/d' drivers/Makefile || true
 sed -i '/sensors/d' drivers/Makefile || true
 
