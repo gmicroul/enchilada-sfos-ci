@@ -446,15 +446,15 @@ jobs:
         ORIGINAL_ZIP_NAME=$(basename "$ZIP_FILE")
         FINAL_ZIP_NAME="${ORIGINAL_ZIP_NAME/sailfishos-/sailfishos-docker-}"
 
-        # Create new ZIP
+        # Create new ZIP in current directory
         echo "Creating final ZIP: $FINAL_ZIP_NAME"
-        zip -r "../$FINAL_ZIP_NAME" .
+        zip -r "$FINAL_ZIP_NAME" .
 
         # List final ZIP
-        ls -lh "../$FINAL_ZIP_NAME"
+        ls -lh "$FINAL_ZIP_NAME"
 
-        # Move final ZIP to parent directory (working directory)
-        mv "../$FINAL_ZIP_NAME" ..
+        # Move final ZIP to parent directory
+        mv "$FINAL_ZIP_NAME" ..
 
         # Go back to working directory
         cd ..
