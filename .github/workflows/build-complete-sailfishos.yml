@@ -56,17 +56,26 @@ jobs:
 
       - name: Archive artifacts
         run: |
-          # Check the output directory inside Docker and then copy it
-          sudo docker exec sailfish-sdk ls -ltrh /workspace/sfe-fajita-5.0.0.73/
-          # Adjust the path based on the output of the previous step
+          # Create artifacts directory
           sudo mkdir -p /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
-          sudo docker cp sailfish-sdk:/workspace/sfe-fajita-5.0.0.73/sailfishos-5.0.0.73-20260220-fajita-SLOT_a.zip /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+
+          # List output directory
+          sudo docker exec sailfish-sdk ls -ltrh /workspace/sfe-fajita-5.0.0.73/
+
+          # Copy all relevant files from Docker
+          # Use shell expansion to copy all files
+          sudo docker exec sailfish-sdk sh -c "cd /workspace/sfe-fajita-5.0.0.73 && tar czf - *.zip *.img *.tar.bz2 *.md5sum *.sha1sum *.sha256sum" | \
+            tar xzf - -C /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+
+          # List copied files
+          ls -lh /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
 
       - name: Upload SailfishOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sailfishos-${{ env.DEVICE }}-${{ env.RELEASE }}
-          path: /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/*.zip
+          path: /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          retention-days: 30
 
       - name: Cleanup
         run: |
@@ -394,25 +403,25 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: sailfishos-${{ env.DEVICE }}-${{ env.RELEASE }}
-        path: ./artifacts
+        path: ./artifacts/sailfishos
 
     - name: Download hybris-boot artifact
       uses: actions/download-artifact@v4
       with:
         name: hybris-boot-${{ env.DEVICE }}-${{ env.RELEASE }}
-        path: ./artifacts
+        path: ./artifacts/kernel
 
     - name: Download kernel image artifact
       uses: actions/download-artifact@v4
       with:
         name: kernel-${{ env.DEVICE }}-${{ env.RELEASE }}
-        path: ./artifacts
+        path: ./artifacts/kernel
 
     - name: Download kernel config artifact
       uses: actions/download-artifact@v4
       with:
         name: kernel-config-${{ env.DEVICE }}
-        path: ./artifacts
+        path: ./artifacts/kernel
 
     - name: List all artifacts
       run: |
@@ -484,7 +493,8 @@ jobs:
 
           Built by GitHub Actions
         files: |
-          ./artifacts/*
+          ./artifacts/sailfishos/*
+          ./artifacts/kernel/*
         draft: false
         prerelease: true
       env:
