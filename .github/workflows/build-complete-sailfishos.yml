@@ -453,12 +453,34 @@ jobs:
         # List final ZIP
         ls -lh "../$FINAL_ZIP_NAME"
 
-        # Move final ZIP to current directory
-        mv "../$FINAL_ZIP_NAME" .
+        # Move final ZIP to parent directory (working directory)
+        mv "../$FINAL_ZIP_NAME" ..
+
+        # Go back to working directory
+        cd ..
+
+        # List final ZIP in working directory
+        echo "Final ZIP in working directory:"
+        ls -lh "$FINAL_ZIP_NAME"
 
         # Save final ZIP path for next step
         echo "FINAL_ZIP_PATH=$FINAL_ZIP_NAME" >> $GITHUB_ENV
         echo "FINAL_ZIP_NAME=$FINAL_ZIP_NAME" >> $GITHUB_ENV
+
+        # Verify environment variables
+        echo "Environment variables set:"
+        echo "FINAL_ZIP_PATH=$FINAL_ZIP_PATH"
+        echo "FINAL_ZIP_NAME=$FINAL_ZIP_NAME"
+
+    - name: Debug before upload
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Files in current directory:"
+        ls -lh
+        echo "Environment variables:"
+        echo "FINAL_ZIP_PATH=$FINAL_ZIP_PATH"
+        echo "FINAL_ZIP_NAME=$FINAL_ZIP_NAME"
 
     - name: Upload final ZIP artifact
       uses: actions/upload-artifact@v4
@@ -466,6 +488,7 @@ jobs:
         name: sailfishos-final-zip
         path: ${{ env.FINAL_ZIP_PATH }}
         retention-days: 30
+        if-no-files-found: error
 
   # Job 3: Create release with final ZIP
   create-release:
