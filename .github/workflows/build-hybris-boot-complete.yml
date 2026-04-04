@@ -69,17 +69,10 @@ jobs:
           gcc-12-arm-linux-gnueabihf \
           g++-12-arm-linux-gnueabihf
 
-    - name: Install mkbootimg and unpack tools
+    - name: Install unpack tools
       run: |
         # Install abootimg for boot.img unpacking
         sudo apt-get install -y abootimg
-
-        # Install mkbootimg from source
-        git clone https://github.com/osm0sis/mkbootimg.git
-        cd mkbootimg
-        make
-        sudo make install
-        cd ..
 
     - name: Download droid-boot.img
       run: |
@@ -259,6 +252,9 @@ jobs:
         # List unpacked files
         ls -lh
 
+        # Show bootimg.cfg
+        cat bootimg.cfg
+
         # Show kernel info
         if [ -f zImage ]; then
           file zImage
@@ -285,8 +281,8 @@ jobs:
       run: |
         cd $ANDROID_ROOT/boot-unpack
 
-        # Repack boot.img using abootimg
-        abootimg --create ../hybris-boot.img -f bootimg.cfg -k zImage -r initramfs.cpio.gz -s second
+        # Update kernel in boot.img using abootimg
+        abootimg -u ../droid-boot.img -k zImage -o ../hybris-boot.img
 
         # Show result
         ls -lh ../hybris-boot.img
