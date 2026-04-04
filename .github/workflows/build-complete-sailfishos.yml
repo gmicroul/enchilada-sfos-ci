@@ -94,7 +94,7 @@ jobs:
           sudo docker stop sailfish-sdk
           sudo docker rm sailfish-sdk
 
-  # Job 2: Build hybris-boot.img
+  # Job 2: Build hybris-boot.img and create final ZIP
   build-hybris-boot:
     runs-on: ubuntu-latest
     needs: build-sailfishos
@@ -408,7 +408,59 @@ jobs:
         path: ${{ env.ANDROID_ROOT }}/output/kernel.config
         retention-days: 30
 
-  # Job 3: Download all artifacts and create release
+    - name: Download SailfishOS artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: sailfishos-artifacts
+        path: ./sailfishos-artifacts
+
+    - name: Create final ZIP with Docker kernel
+      run: |
+        # Find the ZIP file
+        ZIP_FILE=$(find ./sailfishos-artifacts -name "sailfishos-*.zip" | head -1)
+        echo "Found ZIP file: $ZIP_FILE"
+
+        # Create working directory
+        mkdir -p final-zip
+        cd final-zip
+
+        # Unzip the original ZIP
+        unzip "$ZIP_FILE"
+
+        # List original hybris-boot.img
+        echo "Original hybris-boot.img:"
+        ls -lh hybris-boot.img 2>/dev/null || echo "No hybris-boot.img found"
+
+        # Replace hybris-boot.img with Docker kernel version
+        cp ${{ env.ANDROID_ROOT }}/hybris-boot.img hybris-boot.img
+
+        # List new hybris-boot.img
+        echo "New hybris-boot.img:"
+        ls -lh hybris-boot.img
+
+        # Get the original ZIP filename
+        ORIGINAL_ZIP_NAME=$(basename "$ZIP_FILE")
+        FINAL_ZIP_NAME="${ORIGINAL_ZIP_NAME%.zip}-docker.zip"
+
+        # Create new ZIP
+        echo "Creating final ZIP: $FINAL_ZIP_NAME"
+        zip -r "../$FINAL_ZIP_NAME" .
+
+        # List final ZIP
+        ls -lh "../$FINAL_ZIP_NAME"
+
+        # Save final ZIP path for next step
+        echo "FINAL_ZIP_PATH=../$FINAL_ZIP_NAME" >> $GITHUB_ENV
+        echo "FINAL_ZIP_NAME=$FINAL_ZIP_NAME" >> $GITHUB_ENV
+
+    - name: Upload final ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sailfishos-final-zip
+        path: ${{ env.FINAL_ZIP_PATH }}
+        retention-days: 30
+
+  # Job 3: Create release with final ZIP
   create-release:
     runs-on: ubuntu-latest
     needs: [build-sailfishos, build-hybris-boot]
@@ -420,40 +472,16 @@ jobs:
       RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
 
     steps:
-    - name: Download SailfishOS artifact
+    - name: Download final ZIP artifact
       uses: actions/download-artifact@v4
       with:
-        name: sailfishos-artifacts
-        path: ./artifacts/sailfishos
+        name: sailfishos-final-zip
+        path: ./artifacts
 
-    - name: Download hybris-boot artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: hybris-boot-artifact
-        path: ./artifacts/kernel
-
-    - name: Download kernel image artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: kernel-image-artifact
-        path: ./artifacts/kernel
-
-    - name: Download kernel config artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: kernel-config-artifact
-        path: ./artifacts/kernel
-
-    - name: List all artifacts
+    - name: List artifacts
       run: |
-        echo "All artifacts:"
+        echo "Final artifacts:"
         ls -lhR ./artifacts
-        echo ""
-        echo "SailfishOS artifacts:"
-        find ./artifacts/sailfishos -type f -exec ls -lh {} \;
-        echo ""
-        echo "Kernel artifacts:"
-        find ./artifacts/kernel -type f -exec ls -lh {} \;
 
     - name: Generate build summary
       run: |
@@ -465,19 +493,15 @@ jobs:
         echo "- **Docker Support**: Enabled" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
-        echo "- SailfishOS system image (ZIP)" >> $GITHUB_STEP_SUMMARY
-        echo "- hybris-boot.img (complete boot image with new kernel)" >> $GITHUB_STEP_SUMMARY
-        echo "- Image.gz (kernel image only)" >> $GITHUB_STEP_SUMMARY
-        echo "- kernel.config (kernel configuration)" >> $GITHUB_STEP_SUMMARY
+        echo "- sailfishos-*-docker.zip (complete system with Docker kernel)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### How to Install" >> $GITHUB_STEP_SUMMARY
-        echo "1. Download all artifacts" >> $GITHUB_STEP_SUMMARY
-        echo "2. Flash hybris-boot.img using fastboot:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Download the ZIP file" >> $GITHUB_STEP_SUMMARY
+        echo "2. Flash using TWRP:" >> $GITHUB_STEP_SUMMARY
         echo "   ```" >> $GITHUB_STEP_SUMMARY
-        echo "   fastboot flash boot hybris-boot.img" >> $GITHUB_STEP_SUMMARY
-        echo "   fastboot reboot" >> $GITHUB_STEP_SUMMARY
+        echo "   adb sideload sailfishos-*-docker.zip" >> $GITHUB_STEP_SUMMARY
         echo "   ```" >> $GITHUB_STEP_SUMMARY
-        echo "3. Install SailfishOS system image using the ZIP file" >> $GITHUB_STEP_SUMMARY
+        echo "3. Reboot and enjoy!" >> $GITHUB_STEP_SUMMARY
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -496,19 +520,15 @@ jobs:
           - **Docker Support**: Enabled
 
           ### Files
-          - `sailfishos-*.zip` - SailfishOS system image
-          - `hybris-boot.img` - Complete boot image with new kernel (flash this to your device)
-          - `Image.gz` - Kernel image only
-          - `kernel.config` - Kernel configuration
+          - `sailfishos-*-docker.zip` - Complete SailfishOS system with Docker kernel (flash this to your device)
 
           ### How to Install
-          1. Download all files
-          2. Flash hybris-boot.img using fastboot:
+          1. Download the ZIP file
+          2. Flash using TWRP:
              ```
-             fastboot flash boot hybris-boot.img
-             fastboot reboot
+             adb sideload sailfishos-*-docker.zip
              ```
-          3. Install SailfishOS system image using the ZIP file
+          3. Reboot and enjoy!
 
           ### Docker Support
           This kernel includes full Docker support with the following features:
@@ -520,8 +540,7 @@ jobs:
 
           Built by GitHub Actions
         files: |
-          ./artifacts/sailfishos/**/*
-          ./artifacts/kernel/*
+          ./artifacts/*
         draft: false
         prerelease: true
       env:
