@@ -285,8 +285,8 @@ jobs:
       run: |
         cd $ANDROID_ROOT/boot-unpack
 
-        # Update kernel in boot.img using abootimg
-        abootimg -u ../droid-boot.img -k zImage -o ../hybris-boot.img
+        # Create new boot.img using abootimg
+        abootimg --create ../hybris-boot.img -f bootimg.cfg -k zImage -r initrd.img
 
         # Show result
         ls -lh ../hybris-boot.img
