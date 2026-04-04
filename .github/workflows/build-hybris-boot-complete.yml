@@ -108,6 +108,9 @@ jobs:
         git config --global credential.helper store
         echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
 
+        # Remove existing kernel directory if it exists
+        rm -rf kernel/oneplus/sdm845 || true
+
         # Clone only the kernel (much smaller than full Android source)
         git clone --depth 1 --single-branch --branch lineage-16.0 \
           https://github.com/VerdandiTeam/android_kernel_oneplus_sdm845-stable.git \
