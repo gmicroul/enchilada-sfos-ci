@@ -1,12 +1,16 @@
-name: Build Complete SailfishOS for fajita
+name: Build Complete SailfishOS for OnePlus 6/6T
 
 on:
   workflow_dispatch:
     inputs:
       device:
-        description: 'Device codename'
+        description: 'Device codename (fajita=6T, enchilada=6)'
         required: true
         default: 'fajita'
+        type: choice
+        options:
+          - fajita
+          - enchilada
       release:
         description: 'SailfishOS release version'
         required: true
@@ -52,7 +56,7 @@ jobs:
 
       - name: Run build inside Docker
         run: |
-          sudo docker exec sailfish-sdk sh -c "cd /workspace && source ./fajita.env && sudo bash ./run-mic1.sh"
+          sudo docker exec sailfish-sdk sh -c "cd /workspace && source ./${{ env.DEVICE }}.env && sudo bash ./run-mic1.sh"
 
       - name: List files in Docker container
         run: |
@@ -64,11 +68,11 @@ jobs:
           sudo mkdir -p /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
 
           # List output directory
-          sudo docker exec sailfish-sdk ls -ltrh /workspace/sfe-fajita-5.0.0.73/
+          sudo docker exec sailfish-sdk ls -ltrh /workspace/sfe-${{ env.DEVICE }}-${{ env.RELEASE }}/
 
           # Copy all files from Docker using docker cp
           # docker cp doesn't support wildcards, so copy the entire directory
-          sudo docker cp sailfish-sdk:/workspace/sfe-fajita-5.0.0.73/ /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          sudo docker cp sailfish-sdk:/workspace/sfe-${{ env.DEVICE }}-${{ env.RELEASE }}/ /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
 
           # List copied files
           ls -lh /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
@@ -155,6 +159,8 @@ jobs:
         mkdir -p $ANDROID_ROOT
         cd $ANDROID_ROOT
         wget -O droid-boot.img \
+          "https://github.com/gmicroul/fajita-sfos-ci/releases/download/droid-boot/droid-boot-${{ env.DEVICE }}.img" || \
+          wget -O droid-boot.img \
           "https://github.com/gmicroul/fajita-sfos-ci/releases/download/droid-boot/droid-boot.img"
         ls -lh droid-boot.img
 
@@ -200,15 +206,15 @@ jobs:
         echo "Available defconfigs:"
         ls arch/arm64/configs/*_defconfig
 
-        # Find the correct defconfig for fajita
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        # Find the correct defconfig for device
+        if [ -f arch/arm64/configs/${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=${{ env.DEVICE }}_defconfig
+        elif [ -f arch/arm64/configs/lineage_${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=lineage_${{ env.DEVICE }}_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for ${{ env.DEVICE }}"
           exit 1
         fi
 
@@ -283,14 +289,14 @@ jobs:
         export PATH=/usr/bin:$PATH
 
         # Find the correct defconfig
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=${{ env.DEVICE }}_defconfig
+        elif [ -f arch/arm64/configs/lineage_${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=lineage_${{ env.DEVICE }}_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for ${{ env.DEVICE }}"
           exit 1
         fi
 
@@ -386,14 +392,14 @@ jobs:
         cd $ANDROID_ROOT/kernel/oneplus/sdm845/
 
         # Find the correct defconfig
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=${{ env.DEVICE }}_defconfig
+        elif [ -f arch/arm64/configs/lineage_${{ env.DEVICE }}_defconfig ]; then
+          DEFCONFIG=lineage_${{ env.DEVICE }}_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for ${{ env.DEVICE }}"
           exit 1
         fi
 
