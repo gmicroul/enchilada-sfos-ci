@@ -6,7 +6,7 @@ on:
       release:
         description: 'SailfishOS release version'
         required: true
-        default: '5.0.0.73'
+        default: '5.0.0.67'
   push:
     branches: [ main, master ]
     paths:
@@ -19,7 +19,7 @@ permissions:
 
 env:
   DEVICE: 'enchilada'
-  RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
+  RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.67' }}
   ANDROID_ROOT: /home/runner/work/android
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -31,7 +31,7 @@ jobs:
 
     env:
       DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
-      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
+      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.67' }}
 
     steps:
       - name: Checkout repository
@@ -97,7 +97,7 @@ jobs:
 
     env:
       DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
-      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
+      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.67' }}
       ANDROID_ROOT: /home/runner/work/android
 
     steps:
@@ -497,7 +497,7 @@ jobs:
 
     env:
       DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
-      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
+      RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.67' }}
 
     steps:
     - name: Download final ZIP artifact
