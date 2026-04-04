@@ -18,6 +18,9 @@ on:
       - '.github/workflows/build-hybris-boot-complete.yml'
       - 'scripts/clean-kernel-drivers.sh'
 
+permissions:
+  contents: write
+
 env:
   DEVICE: ${{ github.event.inputs.device || 'fajita' }}
   RELEASE: ${{ github.event.inputs.release || '5.0.0.73' }}
