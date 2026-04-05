@@ -73,11 +73,11 @@ if [ "@ARCH@" == armv7hl ] || [ "@ARCH@" == armv7tnhl ]; then
 fi
 ### end 01_arch-hack
 ### begin 01_rpm-rebuilddb
-# Rebuild db using target's rpm
-echo -n "Rebuilding db using target rpm.."
-rm -f /var/lib/rpm/__db*
-rpm --rebuilddb
-echo "done"
+# # Rebuild db using target's rpm
+# echo -n "Rebuilding db using target rpm.."
+# rm -f /var/lib/rpm/__db*
+# rpm --rebuilddb
+# echo "done"
 ### end 01_rpm-rebuilddb
 ### begin 50_oneshot
 # exit boostrap mode
