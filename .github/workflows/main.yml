@@ -6,7 +6,7 @@ on:
       device:
         description: 'Device codename'
         required: true
-        default: 'fajita'
+        default: 'enchilada'
       release:
         description: 'SailfishOS release version'
         required: true
@@ -20,7 +20,7 @@ on:
       - 'scripts/clean-kernel-drivers.sh'
 
 env:
-  DEVICE: ${{ github.event.inputs.device || 'fajita' }}
+  DEVICE: ${{ github.event.inputs.device || 'enchilada' }}
   RELEASE: ${{ github.event.inputs.release || '5.0.0.73' }}
   ANDROID_ROOT: /home/runner/work/android
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -110,14 +110,14 @@ jobs:
         ls arch/arm64/configs/*_defconfig
 
         # Find the correct defconfig for fajita
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/enchilada_defconfig ]; then
+          DEFCONFIG=enchilada_defconfig
+        elif [ -f arch/arm64/configs/lineage_enchilada_defconfig ]; then
+          DEFCONFIG=lineage_enchilada_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for enchilada"
           exit 1
         fi
 
@@ -192,14 +192,14 @@ jobs:
         export PATH=/usr/bin:$PATH
 
         # Find the correct defconfig
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/enchilada_defconfig ]; then
+          DEFCONFIG=enchilada_defconfig
+        elif [ -f arch/arm64/configs/lineage_enchilada_defconfig ]; then
+          DEFCONFIG=lineage_enchilada_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for enchilada"
           exit 1
         fi
 
@@ -257,14 +257,14 @@ jobs:
         cd $ANDROID_ROOT/kernel/oneplus/sdm845/
 
         # Find the correct defconfig
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/enchilada_defconfig ]; then
+          DEFCONFIG=enchilada_defconfig
+        elif [ -f arch/arm64/configs/lineage_enchilada_defconfig ]; then
+          DEFCONFIG=lineage_enchilada_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else
-          echo "Error: No suitable defconfig found for fajita"
+          echo "Error: No suitable defconfig found for enchilada"
           exit 1
         fi
 
@@ -284,10 +284,10 @@ jobs:
         cd $ANDROID_ROOT/kernel/oneplus/sdm845/
 
         # Find the correct defconfig
-        if [ -f arch/arm64/configs/fajita_defconfig ]; then
-          DEFCONFIG=fajita_defconfig
-        elif [ -f arch/arm64/configs/lineage_fajita_defconfig ]; then
-          DEFCONFIG=lineage_fajita_defconfig
+        if [ -f arch/arm64/configs/enchilada_defconfig ]; then
+          DEFCONFIG=enchilada_defconfig
+        elif [ -f arch/arm64/configs/lineage_enchilada_defconfig ]; then
+          DEFCONFIG=lineage_enchilada_defconfig
         elif [ -f arch/arm64/configs/sdm845_defconfig ]; then
           DEFCONFIG=sdm845_defconfig
         else

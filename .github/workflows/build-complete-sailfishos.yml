@@ -26,7 +26,7 @@ permissions:
   contents: write
 
 env:
-  DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
+  DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'enchilada' }}
   RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
   ANDROID_ROOT: /home/runner/work/android
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -38,7 +38,7 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     env:
-      DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
+      DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'enchilada' }}
       RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
 
     steps:
@@ -65,31 +65,31 @@ jobs:
       - name: Archive artifacts
         run: |
           # Create artifacts directory
-          sudo mkdir -p /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          sudo mkdir -p /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/
 
           # List output directory
           sudo docker exec sailfish-sdk ls -ltrh /workspace/sfe-${{ env.DEVICE }}-${{ env.RELEASE }}/
 
           # Copy all files from Docker using docker cp
           # docker cp doesn't support wildcards, so copy the entire directory
-          sudo docker cp sailfish-sdk:/workspace/sfe-${{ env.DEVICE }}-${{ env.RELEASE }}/ /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          sudo docker cp sailfish-sdk:/workspace/sfe-${{ env.DEVICE }}-${{ env.RELEASE }}/ /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/
 
           # List copied files
-          ls -lh /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          ls -lh /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/
 
       - name: Debug artifact directory
         run: |
           echo "Checking artifact directory:"
-          ls -la /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          ls -la /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/
           echo "File count:"
-          find /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/ -type f | wc -l
+          find /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/ -type f | wc -l
           echo "Artifact name will be: sailfishos-${{ env.DEVICE }}-${{ env.RELEASE }}"
 
       - name: Upload SailfishOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sailfishos-artifacts
-          path: /home/runner/work/fajita-sfos-ci/fajita-sfos-ci/artifacts/
+          path: /home/runner/work/enchilada-sfos-ci/enchilada-sfos-ci/artifacts/
           retention-days: 30
           if-no-files-found: error
 
@@ -104,7 +104,7 @@ jobs:
     needs: build-sailfishos
 
     env:
-      DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'fajita' }}
+      DEVICE: ${{ github.event.inputs.device != '' && github.event.inputs.device || 'enchilada' }}
       RELEASE: ${{ github.event.inputs.release != '' && github.event.inputs.release || '5.0.0.73' }}
       ANDROID_ROOT: /home/runner/work/android
 
@@ -159,9 +159,9 @@ jobs:
         mkdir -p $ANDROID_ROOT
         cd $ANDROID_ROOT
         wget -O droid-boot.img \
-          "https://github.com/gmicroul/fajita-sfos-ci/releases/download/droid-boot/droid-boot-${{ env.DEVICE }}.img" || \
+          "https://github.com/gmicroul/enchilada-sfos-ci/releases/download/droid-boot/droid-boot-${{ env.DEVICE }}.img" || \
           wget -O droid-boot.img \
-          "https://github.com/gmicroul/fajita-sfos-ci/releases/download/droid-boot/droid-boot.img"
+          "https://github.com/gmicroul/enchilada-sfos-ci/releases/download/droid-boot/droid-boot.img"
         ls -lh droid-boot.img
 
     - name: Cache kernel build
