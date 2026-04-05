@@ -14,7 +14,7 @@ on:
   push:
     branches: [ main, master ]
     paths:
-      - 'fajita-sfos-ci/**'
+      - 'enchilada-sfos-ci/**'
       - '.github/workflows/build-hybris-boot-complete.yml'
       - 'scripts/clean-kernel-drivers.sh'
 
