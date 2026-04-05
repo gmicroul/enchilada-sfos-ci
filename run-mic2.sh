@@ -2,9 +2,9 @@
 export PLATFORM_SDK_ROOT="/srv/mer"
 export ANDROID_ROOT="/parentroot/srv/hadk"
 export VENDOR="oneplus"
-export DEVICE="enchilada"
+export DEVICE="${DEVICE:-enchilada}"
 export PORT_ARCH="aarch64"
-export RELEASE="5.0.0.67"
+export RELEASE="${RELEASE:-5.0.0.67}"
 
 sudo mkdir -p /proc/sys/fs/binfmt_misc/
 sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc

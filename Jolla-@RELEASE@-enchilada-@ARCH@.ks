@@ -1,10 +1,10 @@
-# DisplayName: Jolla enchilada/@ARCH@ (release) 1+hybris.16.0.20200211164513.7466c31
+# DisplayName: Jolla enchilada/@ARCH@ (release) 5.0.0.62+hybris.16.0.20250612205448.1.gb5230e5
 # KickstartType: release
 # DeviceModel: enchilada
 # DeviceVariant: enchilada
 # Brand: Jolla
 # SuggestedImageType: fs
-# SuggestedArchitecture: armv7hl
+# SuggestedArchitecture: aarch64
 
 timezone --utc UTC
 
@@ -13,34 +13,20 @@ part / --size 500 --ondisk sda --fstype=ext4
 
 ## No suitable configuration found in /tmp/sandbox/usr/share/ssu/kickstart/bootloader
 
-repo --name=adaptation-community-enchilada-@RELEASE@ --baseurl=http://repo.merproject.org/obs/nemo:/testing:/hw:/oneplus:/enchilada/sailfishos_@RELEASE@/
-#repo --name=adaptation-community-common-enchilada-@RELEASE@-@ARCH@ --baseurl=http://repo.merproject.org/obs/nemo:/testing:/hw:/common/sailfishos_@RELEASE@_@ARCH@/
-#repo --name=apps-@RELEASE@ --baseurl=https://releases.jolla.com/jolla-apps/@RELEASE@/@ARCH@/
-#repo --name=hotfixes-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/hotfixes/@ARCH@/
-#repo --name=jolla-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/jolla/@ARCH@/
-
 repo --name=adaptation-common-enchilada-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/jolla-hw/adaptation-common/@ARCH@/
-repo --name=adaptation-community-common-enchilada-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/nemo:/devel:/hw:/common/sailfish_latest_@ARCH@/
+#repo --name=adaptation-community-enchilada-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/nemo:/testing:/hw:/oneplus:/enchilada/sailfishos_@RELEASE@/
+repo --name=adaptation-community-enchilada-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/nemo:/testing:/hw:/oneplus:/enchilada/sailfishos_5.0/
+#repo --name=adaptation-community-common-enchilada-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/nemo:/testing:/hw:/common/sailfishos_@RELEASE@_@ARCH@/
+repo --name=adaptation-community-common-enchilada-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/nemo:/testing:/hw:/common/sailfishos_5.0_@ARCH@/
 repo --name=apps-@RELEASE@ --baseurl=https://releases.jolla.com/jolla-apps/@RELEASE@/@ARCH@/
-repo --name=customer-jolla-@RELEASE@ --baseurl=https://releases.jolla.com/features/@RELEASE@/customers/jolla/@ARCH@/
+#repo --name=chum-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/sailfishos:/chum/@RELEASE@_@ARCH@/
+repo --name=chum-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/sailfishos:/chum/5.0_@ARCH@/
 repo --name=hotfixes-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/hotfixes/@ARCH@/
 repo --name=jolla-@RELEASE@ --baseurl=https://releases.jolla.com/releases/@RELEASE@/jolla/@ARCH@/
+repo --name=mister-@RELEASE@ --baseurl=https://sailfish.openrepos.net/Mister_Magister/personal/main
+repo --name=storeman-@RELEASE@ --baseurl=https://repo.sailfishos.org/obs/home:/olf:/harbour-storeman/5.1_@ARCH@/
 
 %packages
-#@Jolla Configuration enchilada
-#jolla-configuration-enchilada
-#jolla-developer-mode
-#sailfishsilica-qt5-demos
-#busybox-static
-#net-tools
-#openssh-clients
-#openssh-server
-#vim-enhanced
-#zypper
-#strace
-#jolla-rnd-device
-#droid-config-enchilada-bluez5
-#droid-config-enchilada
 patterns-sailfish-device-configuration-enchilada
 %end
 
@@ -53,17 +39,17 @@ patterns-sailfish-device-configuration-enchilada
 
 %end
 
-%pre
+%pre --erroronfail
 export SSU_RELEASE_TYPE=release
 ### begin 01_init
 touch $INSTALL_ROOT/.bootstrap
 ### end 01_init
 %end
 
-%post
+%post --erroronfail
 export SSU_RELEASE_TYPE=release
 ### begin 01_arch-hack
-if [ "@ARCH@" == armv7hl ] || [ "@ARCH@" == armv7tnhl ]; then
+if [ "@ARCH@" == armv7hl ] || [ "@ARCH@" == armv7tnhl ] || [ "@ARCH@" == aarch64 ]; then
     # Without this line the rpm does not get the architecture right.
     echo -n "@ARCH@-meego-linux" > /etc/rpm/platform
 
@@ -73,11 +59,11 @@ if [ "@ARCH@" == armv7hl ] || [ "@ARCH@" == armv7tnhl ]; then
 fi
 ### end 01_arch-hack
 ### begin 01_rpm-rebuilddb
-# # Rebuild db using target's rpm
-# echo -n "Rebuilding db using target rpm.."
-# rm -f /var/lib/rpm/__db*
-# rpm --rebuilddb
-# echo "done"
+# Rebuild db using target's rpm
+echo -n "Rebuilding db using target rpm.."
+rm -f /var/lib/rpm/__db*
+rpm --rebuilddb
+echo "done"
 ### end 01_rpm-rebuilddb
 ### begin 50_oneshot
 # exit boostrap mode
@@ -86,7 +72,6 @@ rm -f /.bootstrap
 # export some important variables until there's a better solution
 export LANG=en_US.UTF-8
 export LC_COLLATE=en_US.UTF-8
-export GSETTINGS_BACKEND=gconf
 
 # run the oneshot triggers for root and first user uid
 UID_MIN=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
@@ -99,11 +84,8 @@ fi
 ### end 50_oneshot
 ### begin 60_ssu
 if [ "$SSU_RELEASE_TYPE" = "rnd" ]; then
-    [ -n "@RNDRELEASE@" ] && ssu release -r @RNDRELEASE@
-    [ -n "@RNDFLAVOUR@" ] && ssu flavour @RNDFLAVOUR@
-    # RELEASE is reused in RND setups with parallel release structures
-    # this makes sure that an image created from such a structure updates from there
-    [ -n "@RELEASE@" ] && ssu set update-version @RELEASE@
+    [ -n "@RELEASE@" ] && ssu release -r @RELEASE@
+    [ -n "@FLAVOUR@" ] && ssu flavour @FLAVOUR@
     ssu mode 2
 else
     [ -n "@RELEASE@" ] && ssu release @RELEASE@
@@ -112,7 +94,7 @@ fi
 ### end 60_ssu
 %end
 
-%post --nochroot
+%post --nochroot --erroronfail
 export SSU_RELEASE_TYPE=release
 ### begin 50_os-release
 (
@@ -123,14 +105,35 @@ cat $INSTALL_ROOT/etc/os-release
 echo "SAILFISH_CUSTOMER=\"${CUSTOMERS//$'\n'/ }\""
 ) > $IMG_OUT_DIR/os-release
 ### end 50_os-release
+### begin 99_check_shadow
+IS_BAD=0
+
+echo "Checking that no user has password set in /etc/shadow."
+# This grep prints users that have password set, normally nothing
+if grep -vE '^[^:]+:[*!]{1,2}:' $INSTALL_ROOT/etc/shadow
+then
+    echo "A USER HAS PASSWORD SET! THE IMAGE IS NOT SAFE!"
+    IS_BAD=1
+fi
+
+# Checking that all users use shadow in passwd,
+# if they weren't the check above would be useless
+if grep -vE '^[^:]+:x:' $INSTALL_ROOT/etc/passwd
+then
+    echo "BAD PASSWORD IN /etc/passwd! THE IMAGE IS NOT SAFE!"
+    IS_BAD=1
+fi
+
+# Fail image build if checks fail
+[ $IS_BAD -eq 0 ] && echo "No passwords set, good." || exit 1
+### end 99_check_shadow
 %end
 
-%pack
+%pack --erroronfail
 export SSU_RELEASE_TYPE=release
 ### begin hybris
 pushd $IMG_OUT_DIR # ./sfe-$DEVICE-$RELEASE_ID
 
-#DEVICE=@DEVICE@
 DEVICE=enchilada
 EXTRA_NAME=@EXTRA_NAME@
 DATE=$(date +"%Y%m%d") # 20191101
@@ -160,8 +163,7 @@ DST_PKG=$ID-$VERSION_ID-$DATE-$DEVICE$EXTRA_NAME-SLOT_a # sailfishos-3.2.0.12-20
 
 # Clone hybris-installer if not preset (e.g. porters-ci build env)
 if [ ! -d ../hybris/hybris-installer/ ]; then
-	git clone --depth 1 https://github.com/sailfishos-oneplus5/hybris-installer ../hybris/hybris-installer > /dev/null
-	#git clone --recurse-submodules --depth 1 https://github.com/sailfish-oneplus6/hybris-installer ../hybris/hybris-installer > /dev/null
+	git clone --depth 1 https://github.com/sailfish-oneplus6/hybris-installer ../hybris/hybris-installer > /dev/null
 fi
 
 # Copy rootfs & hybris-installer scripts into updater .zip tree
@@ -193,3 +195,4 @@ echo " DONE!"
 popd # hadk source tree
 ### end hybris
 %end
+

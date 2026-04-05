@@ -6,8 +6,8 @@
 set -e
 
 KERNEL_DIR="kernel/oneplus/sdm845"
-CONFIG_FILE="arch/arm64/configs/fajita_defconfig"
-BACKUP_FILE="arch/arm64/configs/fajita_defconfig.bak"
+CONFIG_FILE="arch/arm64/configs/enchilada_defconfig"
+BACKUP_FILE="arch/arm64/configs/enchilada_defconfig.bak"
 
 echo "=========================================="
 echo "Docker 内核补丁脚本"
