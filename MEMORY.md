@@ -770,4 +770,6 @@ fi
 
 **说明：** 删除目录后，需要同时清理 Makefile 中的引用，否则 make 会尝试编译不存在的目录。
 
+**优化（2026-04-06）：** 将 `sed -i '/audio/d'` 改为 `sed -i '/audio\//d'`，只删除包含 `audio/` 的行，避免误删注释或其他包含 "audio" 的行。
+
 **相关项目：** enchilada-sfos-ci
