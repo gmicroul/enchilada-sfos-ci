@@ -772,4 +772,31 @@ fi
 
 **优化（2026-04-06）：** 将 `sed -i '/audio/d'` 改为 `sed -i '/audio\//d'`，只删除包含 `audio/` 的行，避免误删注释或其他包含 "audio" 的行。
 
+**techpack/Makefile 创建问题（2026-04-06）：**
+
+**问题：** `techpack/Makefile` 不存在，但是 `make` 命令仍然尝试编译 `techpack/audio` 目录。
+
+**错误信息：**
+```
+scripts/Makefile.build:44: techpack/audio/Makefile: No such file or directory
+make[2]: *** No rule to make target 'techpack/audio/Makefile'. Stop.
+make[1]: *** [scripts/Makefile.build:653: techpack/audio] Error 2
+make: *** [Makefile:1102: techpack] Error 2
+```
+
+**原因：** `techpack/Makefile` 是在 `make` 命令执行时才被创建的，而不是预先存在的。这意味着 `techpack/Makefile` 是由 `make` 命令自动生成的。
+
+**解决方案：** 在清理脚本中添加一个步骤，在 `make` 命令执行之前创建一个空的 `techpack/Makefile`，以防止 `make` 命令尝试编译 `techpack/audio` 目录。
+
+**修改：**
+```bash
+# 添加到 clean-kernel-drivers.sh
+echo "  - 创建空的 techpack/Makefile"
+mkdir -p techpack || true
+touch techpack/Makefile || true
+echo "    - techpack/Makefile 已创建"
+```
+
+**说明：** 创建空的 `techpack/Makefile` 可以防止 `make` 命令尝试编译 `techpack/audio` 目录。
+
 **相关项目：** enchilada-sfos-ci
