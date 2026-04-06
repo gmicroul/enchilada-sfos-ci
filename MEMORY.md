@@ -742,3 +742,32 @@ make $DEFCONFIG
 **说明：** 清理脚本必须在 `make defconfig` 之前运行，因为 `make defconfig` 会读取所有 Kconfig 文件。如果 Kconfig 引用了不存在的目录，构建会立即失败。
 
 **相关项目：** enchilada-sfos-ci
+
+### techpack/Makefile 引用错误（2026-04-06）
+
+**问题：** `techpack/Makefile` 引用了 `techpack/audio` 目录，但该目录已被删除。
+
+**错误信息：**
+```
+scripts/Makefile.build:44: techpack/audio/Makefile: No such file or directory
+make[2]: *** No rule to make target 'techpack/audio/Makefile'. Stop.
+make[1]: *** [scripts/Makefile.build:653: techpack/audio] Error 2
+make: *** [Makefile:1102: techpack] Error 2
+```
+
+**原因：** 清理脚本删除了 `techpack/audio` 目录，但是没有清理 `techpack/Makefile` 中的引用。`techpack/Makefile` 可能有一行类似 `obj-y += audio/`，这会导致 make 尝试编译 `techpack/audio` 目录。
+
+**解决方案：** 在清理脚本中添加清理 `techpack/Makefile` 的步骤。
+
+**修改：**
+```bash
+# 添加到 clean-kernel-drivers.sh
+echo "  - 清理 techpack/Makefile"
+if [ -f techpack/Makefile ]; then
+  sed -i '/audio/d' techpack/Makefile || true
+fi
+```
+
+**说明：** 删除目录后，需要同时清理 Makefile 中的引用，否则 make 会尝试编译不存在的目录。
+
+**相关项目：** enchilada-sfos-ci
