@@ -786,17 +786,14 @@ make: *** [Makefile:1102: techpack] Error 2
 
 **原因：** `techpack/Makefile` 是在 `make` 命令执行时才被创建的，而不是预先存在的。这意味着 `techpack/Makefile` 是由 `make` 命令自动生成的。
 
-**解决方案：** 在清理脚本中添加一个步骤，在 `make` 命令执行之前创建一个空的 `techpack/Makefile`，以防止 `make` 命令尝试编译 `techpack/audio` 目录。
+**解决方案：** 不删除 `techpack/audio` 目录，因为它是内核编译所必需的。参考一加6T（fajita）的做法，它的 `clean-kernel-drivers.sh` 脚本没有删除 `techpack/audio` 目录。
 
 **修改：**
 ```bash
-# 添加到 clean-kernel-drivers.sh
-echo "  - 创建空的 techpack/Makefile"
-mkdir -p techpack || true
-touch techpack/Makefile || true
-echo "    - techpack/Makefile 已创建"
+# 不删除 techpack/audio 目录
+# rm -rf techpack/audio || true
 ```
 
-**说明：** 创建空的 `techpack/Makefile` 可以防止 `make` 命令尝试编译 `techpack/audio` 目录。
+**说明：** `techpack/audio` 目录对于内核编译来说是必需的，不应该被删除。
 
 **相关项目：** enchilada-sfos-ci
