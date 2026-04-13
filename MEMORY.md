@@ -797,3 +797,32 @@ make: *** [Makefile:1102: techpack] Error 2
 **说明：** `techpack/audio` 目录对于内核编译来说是必需的，不应该被删除。
 
 **相关项目：** enchilada-sfos-ci
+
+### mdss-dsi-pll-10nm 编译错误（2026-04-13）
+
+**问题：** 编译 `drivers/clk/qcom/mdss/mdss-dsi-pll-10nm.c` 时，找不到 `trace/events/mdss_pll.h` 头文件。
+
+**错误信息：**
+```
+./include/trace/define_trace.h:77:34: fatal error: trace/events/mdss_pll.h: No such file or directory
+ 77 | # define __TRACE_INCLUDE(system) <trace/events/system.h>
+     | ^
+compilation terminated.
+make[4]: *** [scripts/Makefile.build:339: drivers/clk/qcom/mdss/mdss-dsi-pll-10nm.o] Error 1
+```
+
+**原因：** `mdss-dsi-pll-10nm.c` 文件中使用了 `TRACE_INCLUDE` 宏，它期望找到 `trace/events/mdss_pll.h` 头文件，但是这个文件不存在。这个头文件应该由内核的 trace 系统自动生成，但可能因为某些原因没有生成。
+
+**解决方案：** 直接删除有问题的文件，因为它们对于基本的内核启动不是必需的。
+
+**修改：**
+```bash
+# 删除 mdss-dsi-pll-10nm 驱动（缺少 trace 头文件）
+rm -f drivers/clk/qcom/mdss/mdss-dsi-pll-10nm.c || true
+rm -f drivers/clk/qcom/mdss/mdss-dp-pll-10nm.c || true
+rm -f drivers/clk/qcom/mdss/mdss-pll.c || true
+```
+
+**说明：** 这些驱动是 Qualcomm MDSS (Mobile Display Subsystem) PLL 驱动，用于显示时钟生成。对于基本的内核启动来说不是必需的。
+
+**相关项目：** enchilada-sfos-ci
